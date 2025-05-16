@@ -1,34 +1,42 @@
 from crewai import Task
 
-def consultar_cep(agent, cep):
+def sugerir_Livro(agent ):
     return Task(
-        description=f"Consulte o CEP {cep} e retorne a cidade e estado correspondentes",
+        description="Sugira um livro aleatório, falando o genêro do livro",
         agent=agent,
-        expected_output="Nome da Cidade, UF",
-        output_file="output/resultado_cep.txt",
+        expected_output="Livros de qualquer procedencia",
+        output_file="output/livro_sugerido.txt",
         verbose=True
     )
 
-def buscar_clima(agent, contexto):
+def sugerir_Musica(agent, contexto):
     return Task(
-        description="Obtenha a previsão do tempo para a localidade",
+        description=f"Sugira uma Musica com base no genêro {contexto}",
         agent=agent,
-        expected_output="Descrição do clima e temperatura em °C",
-        output_file="output/previsao_tempo.txt"
+        expected_output="Pode dar 3 musicas",
+        output_file="output/musica_sugerida.txt"
     )
 
-def sugerir_roteiro(agent, contexto):
+def sugerir_Filme(agent, contexto):
     return Task(
-        description="Sugira um roteiro turístico para a cidade, levando em consideração a previsão do tempo",
+        description=f"Sugira um filme com base no genêro {contexto}",
         agent=agent,
         expected_output="3 sugestões formatadas em tópicos",
-        output_file="output/roteiro.txt"
+        output_file="output/filme_sugerido.txt"
     )
 
-def contar_piada(agent):
+def explicar_genero(agent, contexto):
     return Task(
-        description="Conte uma piada sobre viagens",
+        description=f"Explique esse genêro {contexto}",
         agent=agent,
-        expected_output="Uma piada em português",
-        output_file="output/piada.txt"
+        expected_output="Entregue o dicionario inteiro desse genêro",
+        output_file="output/explicacao_dicionario.txt"
+    )
+
+def sugerir_Anime(agent, contexto):
+    return Task(
+        description=f"Sugira um anime o genêro{contexto}",
+        agent=agent,
+        expected_output="3 sugestões explicando o motivo da escolha",
+        output_file="output/anime_sugerido.txt"
     )

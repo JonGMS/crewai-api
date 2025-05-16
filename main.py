@@ -6,29 +6,32 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuração
-cep = "88504480"
+#cep = "88509900" #Coloquei o CEP da Uniplac para n me expor tanto 
 
 # Cria agentes
-localizador = create_cep_agent()
-meteorologista = create_meteorologista()
-consultor = create_consultor_viagens()
-comediante = create_comediantes()
+livreiro = create_Livreiro_agent()
+cinefilo = create_cinefilo()
+otaku = create_otaku()
+dicionario = create_dicionario()
+musico = create_musico()
 
 # Cria tarefas
-task1 = consultar_cep(localizador, cep)
-task2 = buscar_clima(meteorologista, [task1])
-task3 = sugerir_roteiro(consultor, [task1])
-task4 = contar_piada(comediante)
+task1 = sugerir_Livro(livreiro)
+task2 = explicar_genero	(dicionario, [task1])
+task3 = sugerir_Filme(cinefilo, [task2])
+task4 = sugerir_Anime(otaku, [task2])
+
+task5 = sugerir_Musica(musico, [task2])
 
 # Configura Crew
 crew = Crew(
-    agents=[localizador, meteorologista, consultor, comediante],
-    tasks=[task1, task2, task3, task4],
+    agents=[livreiro,dicionario, cinefilo, otaku, musico],
+    tasks=[task1, task2, task3, task4, task5],
     verbose=True
 )
 
 # Execução
-print("## Agente Turístico Iniciado ##")
+print("## Agentes Iniciados ##")
 resultado = crew.kickoff()
 
 print("\n=== RESULTADOS ===")
