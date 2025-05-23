@@ -16,17 +16,17 @@ dicionario = create_dicionario()
 musico = create_musico()
 
 # Cria tarefas
-task1 = sugerir_Livro(livreiro)
-task2 = explicar_genero	(dicionario, [task1])
-task3 = sugerir_Filme(cinefilo, [task2])
-task4 = sugerir_Anime(otaku, [task2])
+genero = sugerir_Livro(livreiro)
+task2 = explicar_genero	(dicionario, [genero])
+task3 = sugerir_Filme(cinefilo, [genero])
+task4 = sugerir_Anime(otaku, [genero])
 
-task5 = sugerir_Musica(musico, [task2])
+#task5 = sugerir_Musica(musico, [genero])
 
 # Configura Crew
 crew = Crew(
     agents=[livreiro,dicionario, cinefilo, otaku, musico],
-    tasks=[task1, task2, task3, task4, task5],
+    tasks=[genero, task2, task3, task4],
     verbose=True
 )
 

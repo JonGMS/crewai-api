@@ -4,44 +4,65 @@ from crewai.tools import BaseTool
 from typing import Optional
 import os
 
+import requests
+import random
+from crewai.tools import BaseTool
+from pydantic import BaseModel
+
+
+# Schema de entrada para o argumento
 class FetchMusicTool(BaseTool):
     name: str = "Consultor de Músicas"
-    description: str = "Sugere músicas aleatórias ou busca informações sobre uma música específica."
+    description: str = "Sugere músicas com base em um gênero musical usando a API do Last.fm."
 
-    def _run(self, music: str = None) -> str:
-        API_KEY = "SUA_CHAVE_AQUI"
+    def _run(self, music: Optional[str] = None) -> str:
+        API_KEY = os.getenv("LASTFM_API_KEY")
+        genero = music if music else "pop"
 
-        if music:
-            url = f"https://api.vagalume.com.br/search.excerpt?q={music}&apikey={API_KEY}"
-        else:
-            url = f"https://api.vagalume.com.br/hotspots?apikey={API_KEY}"
-
+        url = f"http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={genero}&api_key={API_KEY}&format=json&limit=10"
         response = requests.get(url)
         data = response.json()
 
-        if "mus" in data:
-            musica = random.choice(data["mus"])
-            return f"Música recomendada: {musica['name']}\nArtista: {musica['band']}\nLink para ouvir: {musica['url']}"
+        if "tracks" in data and "track" in data["tracks"]:
+            faixa = random.choice(data["tracks"]["track"])
+            titulo = faixa["name"]
+            artista = faixa["artist"]["name"]
+            link = faixa["url"]
+            return f"Música recomendada: {titulo}\nArtista: {artista}\nLink: {link}"
         else:
             return "Não foi possível obter uma recomendação no momento."
 
+# class FetchLivroTool(BaseTool):
+#     name: str = "Consultor de Livros"
+#     description: str = "Sugere livros com base em um gênero literário aleatório entre opções pré-definidas."
+
+#     def _run(self, genero: str = None) -> str:
+#         generos_disponiveis = ["suspense", "romance", "fantasy", "mystery", "philosophy", "self-help"]
+#         genero_escolhido = genero if genero else random.choice(generos_disponiveis)
+
+#         url = f"https://www.googleapis.com/books/v1/volumes?q=subject:{genero_escolhido}&maxResults=5"
+#         response = requests.get(url)
+#         data = response.json()
+
+#         if "items" in data:
+#             return f"Gênero: {genero_escolhido.capitalize()}"
+#         else:
+#             return "Não foi possível encontrar livros para esse gênero."
 class FetchLivroTool(BaseTool):
     name: str = "Consultor de Livros"
-    description: str = "Sugere livros com base em um gênero literário aleatório entre opções pré-definidas."
+    description: str = "Sugere um livro com base em um gênero literário aleatório entre opções pré-definidas."
 
     def _run(self, genero: str = None) -> str:
         generos_disponiveis = ["suspense", "romance", "fantasy", "mystery", "philosophy", "self-help"]
         genero_escolhido = genero if genero else random.choice(generos_disponiveis)
 
-        url = f"https://www.googleapis.com/books/v1/volumes?q=subject:{genero_escolhido}&maxResults=5"
+        url = f"https://www.googleapis.com/books/v1/volumes?q=subject:{genero_escolhido}&maxResults=1"
         response = requests.get(url)
         data = response.json()
 
-        if "items" in data:
-            livro = random.choice(data["items"])["volumeInfo"]
-            titulo = livro.get("title", "Sem título")
-            autores = ", ".join(livro.get("authors", ["Desconhecido"]))
-            return f"Livro recomendado: {titulo}\nAutor(es): {autores}\nGênero: {genero_escolhido.capitalize()}"
+        if "items" in data and len(data["items"]) > 0:
+            # Aqui só retorna o gênero do livro escolhido
+            return f"Gênero do livro: {genero_escolhido.capitalize()}"
         else:
             return "Não foi possível encontrar livros para esse gênero."
 
@@ -85,15 +106,20 @@ class FetchOtakuTool(BaseTool):
     description: str = "Sugere animes com base em um tema usando a AniAPI."
 
     def _run(self, genero: str = "fantasy") -> str:
-        API_KEY = "SUA_CHAVE_ANIAPI"
-        headers = {"Authorization": f"Bearer {API_KEY}"}
-        url = f"https://api.aniapi.com/v1/anime?genres={genero.lower()}&nsfw=false&per_page=5"
-        response = requests.get(url, headers=headers)
-        data = response.json()
+        genero_lower = genero.lower()
 
-        if data.get("data") and data["data"].get("documents"):
-            anime = random.choice(data["data"]["documents"])
-            titulo = anime["titles"].get("en", anime["titles"].get("romaji", "Sem título"))
-            return f"Anime recomendado com o tema '{genero}': {titulo}"
-        else:
-            return "Nenhum anime encontrado para esse tema."
+        url = f"https://api.jikan.moe/v4/anime?genres={genero_lower}&limit=10"
+        response = requests.get(url)
+        if response.status_code != 200:
+            return "Erro ao consultar a API de animes."
+
+        data = response.json()
+        animes = data.get("data", [])
+
+        if not animes:
+            return f"Nenhum anime encontrado para o gênero '{genero}'."
+
+        anime = random.choice(animes)
+        titulo = anime.get("title", "Sem título")
+
+        return f"Anime recomendado com o tema '{genero}': {titulo}"
