@@ -29,7 +29,8 @@ def explicar_genero(agent, contexto):
     return Task(
         description=f"Explique esse genêro {contexto}",
         agent=agent,
-        expected_output="Entregue o dicionario inteiro desse genêro",
+        #expected_output="Entregue o dicionario inteiro desse genêro",
+        expected_output="Entregue um resumo curto do que é o tema",
         output_file="output/explicacao_dicionario.txt"
     )
 

@@ -10,16 +10,16 @@ from crewai.tools import BaseTool
 from pydantic import BaseModel
 
 
-# Schema de entrada para o argumento
-class FetchMusicTool(BaseTool):
+
+
+class FetchMusicTool(BaseTool):#não esta sendo utilizado
     name: str = "Consultor de Músicas"
     description: str = "Sugere músicas com base em um gênero musical usando a API do Last.fm."
 
     def _run(self, music: Optional[str] = None) -> str:
-        API_KEY = os.getenv("LASTFM_API_KEY")
         genero = music if music else "pop"
 
-        url = f"http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={genero}&api_key={API_KEY}&format=json&limit=10"
+        url = f"http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={genero}"
         response = requests.get(url)
         data = response.json()
 
@@ -32,22 +32,6 @@ class FetchMusicTool(BaseTool):
         else:
             return "Não foi possível obter uma recomendação no momento."
 
-# class FetchLivroTool(BaseTool):
-#     name: str = "Consultor de Livros"
-#     description: str = "Sugere livros com base em um gênero literário aleatório entre opções pré-definidas."
-
-#     def _run(self, genero: str = None) -> str:
-#         generos_disponiveis = ["suspense", "romance", "fantasy", "mystery", "philosophy", "self-help"]
-#         genero_escolhido = genero if genero else random.choice(generos_disponiveis)
-
-#         url = f"https://www.googleapis.com/books/v1/volumes?q=subject:{genero_escolhido}&maxResults=5"
-#         response = requests.get(url)
-#         data = response.json()
-
-#         if "items" in data:
-#             return f"Gênero: {genero_escolhido.capitalize()}"
-#         else:
-#             return "Não foi possível encontrar livros para esse gênero."
 class FetchLivroTool(BaseTool):
     name: str = "Consultor de Livros"
     description: str = "Sugere um livro com base em um gênero literário aleatório entre opções pré-definidas."
@@ -71,9 +55,7 @@ class FetchCinefiloTool(BaseTool):
     description: str = "Sugere filmes com base em um tema usando a API Simkl."
 
     def _run(self, tema: str = "drama") -> str:
-        API_KEY = "SUA_CHAVE_SIMKL"
-        url = f"https://api.simkl.com/search/movie?q={tema}&client_id={API_KEY}"
-        headers = {"simkl-api-key": API_KEY}
+        url = f"https://api.simkl.com/search/movie?q={tema}"
 
         try:
             response = requests.get(url, headers=headers)

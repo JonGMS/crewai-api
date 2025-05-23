@@ -16,13 +16,14 @@ def create_Livreiro_agent():
 def create_musico():
     return Agent(
         name="Especialista Musical",
-        role="Sugere músicas de acordo com tendências e preferências.",
-        goal="Recomendar músicas de diferentes estilos com base no humor ou gosto do usuário.",
-        backstory="Um DJ virtual apaixonado por música, treinado para encontrar e sugerir as melhores faixas.",
+        role="Sugere músicas.",
+        goal="Recomendar músicas no genero.",
+        backstory="Um DJ virtual apaixonado por música.",
         tools=[FetchMusicTool()],
         verbose=True,
         llm=get_llm()
     )
+
 def create_cinefilo():
     return Agent(
         role="Especialista em filmes",
