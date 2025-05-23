@@ -45,7 +45,6 @@ class FetchLivroTool(BaseTool):
         data = response.json()
 
         if "items" in data and len(data["items"]) > 0:
-            # Aqui só retorna o gênero do livro escolhido
             return f"Gênero do livro: {genero_escolhido.capitalize()}"
         else:
             return "Não foi possível encontrar livros para esse gênero."
